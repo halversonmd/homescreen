@@ -1,0 +1,5 @@
+.idea
+config.txt
+goog.py
+.DS_Store
+__pycache__
