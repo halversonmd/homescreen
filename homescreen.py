@@ -1,3 +1,6 @@
+# smartmirror.py
+# requirements
+# requests, feedparser, traceback, Pillow
 
 from tkinter import *
 from tkinter import font
@@ -98,10 +101,8 @@ class Commute(Frame):
     def __init__(self, parent, *args, **kwargs):
 
         Frame.__init__(self, parent, bg=background_color)
-        self.trains = trains
-        self.cmt_times = self.trains()
-
-
+        # self.trains = trains
+        # self.cmt_times = self.trains()
 
         self.cmtLbl = Label(self, font=(ui_font, medium_text_size), fg=font_color, bg=background_color, text='Commute:')
         self.cmtLbl.pack(side=TOP, anchor=W)
@@ -118,28 +119,16 @@ class Commute(Frame):
 
     def update(self):
         
-        self.cmt_times = self.trains()
-        self.mikeVar.set('Husband, {} minutes'.format(self.cmt_times['mike']))
-        self.anneVar.set('Wife, {} minutes'.format(self.cmt_times['anne']))
-        self.cmtLbl.after(300000, self.update)
+        cmt_times = trains()
+        self.mikeVar.set('Husband, {} minutes'.format(cmt_times['mike']))
+        self.anneVar.set('Wife, {} minutes'.format(cmt_times['anne']))
+        self.cmtLbl.after(60000, self.update)
 
 
-class uber_data():
-    def __init__(self, root):
-
-        self.root = root
-        self.get_uber_data()
-
-    def get_uber_data(self):
-        self.uber_data = uber()
-        self.root.after(55000, self.get_uber_data)
-
-
-class Uber(Frame, uber_data):
+class Uber(Frame):
     def __init__(self, parent, name, root, *args, **kwargs):
 
         Frame.__init__(self, parent, bg=background_color)
-        uber_data.__init__(self, root)
         self.name = name
 
         if self.name == 'anne':
@@ -165,26 +154,16 @@ class Uber(Frame, uber_data):
         self.update()
 
     def update(self):
-
-        self.estVar.set('{}'.format(self.uber_data[self.name]['estimate']))
-        self.durVar.set('{} min ride'.format(self.uber_data[self.name]['duration']))
-        self.waitVar.set('{} min wait'.format(self.uber_data[self.name]['wait_time']))
+        uber_data = uber()
+        self.estVar.set('{}'.format(uber_data[self.name]['estimate']))
+        self.durVar.set('{} min ride'.format(uber_data[self.name]['duration']))
+        self.waitVar.set('{} min wait'.format(uber_data[self.name]['wait_time']))
         self.uberLbl.after(60000, self.update)
 
-class mta_data():
-    def __init__(self, root):
 
-        self.root = root
-        self.get_mta_data()
-
-    def get_mta_data(self):
-        self.mta_data = mta()
-        self.root.after(55000, self.get_mta_data)
-
-class MTA(Frame, mta_data):
+class MTA(Frame):
     def __init__(self, parent, name, root, *args, **kwargs):
         Frame.__init__(self, parent, bg=background_color)
-        mta_data.__init__(self, root)
         self.name = name
 
         if self.name == 'anne':
@@ -213,12 +192,13 @@ class MTA(Frame, mta_data):
 
         self.Lb1.delete(0, END)
         now = dt.now()
-        for idx, train_time in enumerate(self.mta_data[self.name]):
+        mta_data = mta()
+        for idx, train_time in enumerate(mta_data[self.name]):
             if now < train_time:
                 self.Lb1.insert(idx, '{} min'.format((train_time-now).seconds // 60))
             if idx == 4:
                 break
-        self.Lb1.after(56000, self.update)
+        self.Lb1.after(60000, self.update)
 
 
 
@@ -259,14 +239,15 @@ class Weather(Frame):
 
             if latitude is None and longitude is None:
                 # get location
-                location_req_url = "http://freegeoip.net/json/%s" % self.get_ip()
+                location_req_url = "https://json.geoiplookup.io/{}".format(self.get_ip())
                 r = requests.get(location_req_url)
                 location_obj = json.loads(r.text)
+                # print(json.dumps(location_obj, indent=2))
 
                 lat = location_obj['latitude']
                 lon = location_obj['longitude']
 
-                location2 = "%s, %s" % (location_obj['city'], location_obj['region_code'])
+                location2 = "%s, %s" % (location_obj['city'], location_obj['region'])
 
                 # get weather
                 weather_req_url = "https://api.darksky.net/forecast/%s/%s,%s?lang=%s&units=%s" % (weather_api_token, lat,lon,weather_lang,weather_unit)
@@ -277,6 +258,7 @@ class Weather(Frame):
 
             r = requests.get(weather_req_url)
             weather_obj = json.loads(r.text)
+            # print(json.dumps(weather_obj, indent=2))
 
             degree_sign= u'\N{DEGREE SIGN}'
             temperature2 = "%s%s" % (str(int(weather_obj['currently']['temperature'])), degree_sign)

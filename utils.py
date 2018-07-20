@@ -46,8 +46,9 @@ def uber():
         )
 
         resp = response.json.get('prices')
+        # print(json.dumps(resp, indent=2))
         for opt in resp:
-            if opt['localized_display_name'] == 'uberX':
+            if opt['localized_display_name'].lower() == 'uberx':
                 estimate = opt['estimate']
                 duration = int(opt['duration']/60)
                 response = client.get_pickup_time_estimates(home_lat, home_lon, product_id=opt['product_id'])
@@ -74,7 +75,10 @@ def mta():
 
         feed = gtfs_realtime_pb2.FeedMessage()
         response = urllib.request.urlopen(url)
-        feed.ParseFromString(response.read())
+        try:
+            feed.ParseFromString(response.read())
+        except Exception:
+            return []
         next_trains = []
         for entity in feed.entity:
             for stop in entity.trip_update.stop_time_update:
@@ -84,11 +88,14 @@ def mta():
         return next_trains
 
     now = dt.datetime.now()
-    return {'now':now,'mike': get_times('mike'), 'anne': get_times('anne')}
+    resp = {'now':now,'mike': get_times('mike'), 'anne': get_times('anne')}
+    # print('mta data:', resp)
+    return resp
 
 
 if __name__ == '__main__':
     
-    mta_data = mta()
-    print('mta_data', mta_data['anne'])
+    # uber = uber()
+    mta = mta()
+    print(mta)
     
