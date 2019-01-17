@@ -23,7 +23,7 @@ def trains():
         travel_time = arrive_time - depart_time
         return travel_time.seconds // 60 % 60
 
-    return {'mike':get_time('mike'), 'anne': get_time('anne')}
+    return {'mike':get_time('mike'), 'anne':get_time('anne')}
 
 def uber():
 
@@ -46,7 +46,6 @@ def uber():
         )
 
         resp = response.json.get('prices')
-        # print(json.dumps(resp, indent=2))
         for opt in resp:
             if opt['localized_display_name'].lower() == 'uberx':
                 estimate = opt['estimate']
@@ -84,13 +83,9 @@ def mta():
             for stop in entity.trip_update.stop_time_update:
                 if stop.stop_id == stp_id:
                     next_trains.append(dt.datetime.fromtimestamp(stop.arrival.time))
-        next_trains.sort()
         return next_trains
 
-    now = dt.datetime.now()
-    resp = {'now':now,'mike': get_times('mike'), 'anne': get_times('anne')}
-    # print('mta data:', resp)
-    return resp
+    return {'now':dt.datetime.now(),'mike': get_times('mike'), 'anne': get_times('anne')}
 
 
 if __name__ == '__main__':

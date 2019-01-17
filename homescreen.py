@@ -29,7 +29,7 @@ large_text_size = 48
 medium_text_size = 34
 small_text_size = 18
 font_color = 'white'
-ui_font = 'Didot'
+ui_font = 'Calibri'
 background_color = 'black'
 
 @contextmanager
@@ -118,7 +118,7 @@ class Commute(Frame):
         self.update()
 
     def update(self):
-        
+
         cmt_times = trains()
         self.mikeVar.set('Husband, {} minutes'.format(cmt_times['mike']))
         self.anneVar.set('Wife, {} minutes'.format(cmt_times['anne']))
@@ -192,8 +192,9 @@ class MTA(Frame):
 
         self.Lb1.delete(0, END)
         now = dt.now()
-        mta_data = mta()
-        for idx, train_time in enumerate(mta_data[self.name]):
+        mta_data += mta().get(self.name)
+        mta_data.sort()
+        for idx, train_time in enumerate(mta_data):
             if now < train_time:
                 self.Lb1.insert(idx, '{} min'.format((train_time-now).seconds // 60))
             if idx == 4:
