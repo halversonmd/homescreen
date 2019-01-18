@@ -192,6 +192,7 @@ class MTA(Frame):
 
         self.Lb1.delete(0, END)
         now = dt.now()
+        mta_data = mta_data or []
         mta_data += mta().get(self.name)
         mta_data.sort()
         for idx, train_time in enumerate(mta_data):
