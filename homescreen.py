@@ -193,7 +193,7 @@ class MTA(Frame):
 
         self.Lb1.delete(0, END)
         now = dt.now()
-        self.mta_data += mta().get(self.name)
+        self.mta_data += [x for x in mta().get(self.name) if x not in self.mta_data]
         self.mta_data.sort()
         for idx, train_time in enumerate(self.mta_data):
             if now < train_time:
