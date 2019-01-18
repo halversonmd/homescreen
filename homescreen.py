@@ -165,7 +165,6 @@ class MTA(Frame):
     def __init__(self, parent, name, root, *args, **kwargs):
         Frame.__init__(self, parent, bg=background_color)
         self.name = name
-        self.mta_data = []
 
         if self.name == 'anne':
             train = '6_train'
@@ -193,12 +192,14 @@ class MTA(Frame):
 
         self.Lb1.delete(0, END)
         now = dt.now()
-        self.mta_data += [x for x in mta().get(self.name) if x not in self.mta_data]
-        self.mta_data.sort()
+        new_data = mta().get(self.name)
+        if new_data:
+            self.mta_data = new_data
+            self.mta_data.sort()
         for idx, train_time in enumerate(self.mta_data):
             if now < train_time:
                 self.Lb1.insert(idx, '{} min'.format((train_time-now).seconds // 60))
-            if idx == 4:
+            if idx == 6:
                 break
         self.Lb1.after(60000, self.update)
 
